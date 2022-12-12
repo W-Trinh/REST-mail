@@ -49,21 +49,28 @@ def welcome():
 @app.route('/mailboxes', methods=['POST'])
 def post_mailboxes():
     "Créer une bal en fournissant un nom d'utilisateur (son futur identifiant)"
-    user_id = request.args.get("id")
-    execute_query("insert into mailboxes (id) values (?)", (user_id,))
+    user_name = request.args.get("name")
+    execute_query("insert into users (name) values (?)", (user_name,))
+    execute_query("insert into mailboxes (user_id) values  ( (select id from users where name = ?) )", (user_name,))
     # on renvoi le lien du mailboxes  que l'on vient de créer
     reponse_json = jsonify({
         "_links": [{
-            "href": "/mailboxes/" + user_id,
+            "href": "/mailboxes/" + user_name,
             "rel": "self"
         }]
     })
     return reponse_json, 201  # created
 
-@app.route('/mailboxes/<string:id>', methods=['DELETE'])
-def delete_mailboxes(id):
-    "Supprimer une bal en fournissant son identifiant"
-    execute_query("delete from mailboxes where id = ?", (id,))
+@app.route('/mailboxes/<string:user_name>', methods=['DELETE'])
+def delete_mailboxes(user_name):
+    "Supprimer une bal en fournissant son nom"
+    user = execute_query("select id from users where name = ?", (user_name,))
+    if user == []:
+        abort(404, "Cet utilisateur n'existe pas")
+
+    execute_query("delete from mailboxes where user_id = ?", (user[0]["id"],))
+    execute_query("delete from users where name = ?", (user_name,))
+
     return "",204  # no data
 
 if __name__ == '__main__':
