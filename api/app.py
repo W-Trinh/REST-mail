@@ -64,7 +64,7 @@ def post_mailboxes():
 def delete_mailboxes(id):
     "Supprimer une bal en fournissant son identifiant"
     execute_query("delete from mailboxes where id = ?", (id,))
-    return reponse_json, 204  # no data
+    return "",204  # no data
 
 if __name__ == '__main__':
     # define the localhost ip and the port that is going to be used
