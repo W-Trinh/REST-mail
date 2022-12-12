@@ -46,6 +46,21 @@ def welcome():
     }]
     return jsonify(liens), 200
 
+@app.route('/mailboxes', methods=['POST'])
+def post_mailboxes():
+    "Créer une bal en fournissant un nom d'utilisateur (son futur identifiant)"
+    user_id = request.args.get("id")
+    execute_query("insert into mailboxes (id) values (?)", (user_id,))
+    # on renvoi le lien du mailboxes  que l'on vient de créer
+    reponse_json = jsonify({
+        "_links": [{
+            "href": "/mailboxes/" + user_id,
+            "rel": "self"
+        }]
+    })
+    return reponse_json, 201  # created
+
+
 if __name__ == '__main__':
     # define the localhost ip and the port that is going to be used
     app.run(host='0.0.0.0', port=5000)
