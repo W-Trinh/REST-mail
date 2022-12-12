@@ -60,6 +60,11 @@ def post_mailboxes():
     })
     return reponse_json, 201  # created
 
+@app.route('/mailboxes/<string:id>', methods=['DELETE'])
+def delete_mailboxes(id):
+    "Supprimer une bal en fournissant son identifiant"
+    execute_query("delete from mailboxes where id = ?", (id,))
+    return reponse_json, 204  # no data
 
 if __name__ == '__main__':
     # define the localhost ip and the port that is going to be used
